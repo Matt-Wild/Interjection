@@ -7,6 +7,8 @@ from pe2 import object
 from pe2 import complex
 from pe2 import sound
 
+import player_data
+
 hover_sound = sound.new("main_menu_select.wav")
 confirm_sound = sound.new("main_menu_confirm.wav")
 hover_sound.set_volume(0.2)
@@ -43,6 +45,12 @@ class Battle:
         self.grid.rescale_pwidth(0.98)
         self.grid.set_px(0.5)
         self.grid.set_py(0.5)
+
+        self.friendly_tiles = []
+        self.hostile_tiles = []
+        self.create_tiles()
+
+        self.friendly_team = []
 
         button_y = self.grid.get_bottom_y() + 10
 
@@ -90,10 +98,14 @@ class Battle:
         runner.clear_update_queue()
         runner.clear_draw_queue()
 
+        self.friendly_team = PD.team_layout
+
         self.reset_buttons()
 
         runner.append_to_update_queue((self.grid, self.battle_button, self.move_button, self.menu_button))
         runner.append_to_draw_queue((self.grid, self.battle_button, self.move_button, self.menu_button))
+
+        self.pass_tiles_to_runner()
 
     def run(self):
         window.fill((0, 0, 0))
@@ -139,6 +151,53 @@ class Battle:
             return 0
 
         return 1
+
+    def create_tiles(self):
+        self.friendly_tiles = []
+        self.hostile_tiles = []
+
+        tile_width = self.grid.get_width() / 6
+        tile_height = self.grid.get_height() / 3
+        tile_x = self.grid.get_x()
+        tile_y = self.grid.get_y()
+        for x in range(3):
+            row = []
+            for y in range(3):
+                name = "Friendly Tile " + str(x) + " " + str(y)
+
+                passive = object.Object(handler, name + " Passive", width=tile_width, height=tile_height, x=tile_x + (x * tile_width), y=tile_y + (y * tile_height))
+                hovered = object.Rect(handler, name + " Hovered", width=tile_width, height=tile_height, x=tile_x + (x * tile_width), y=tile_y + (y * tile_height), colour=(255, 255, 255), alpha=100)
+                active = object.Rect(handler, name + " Active", width=tile_width, height=tile_height, x=tile_x + (x * tile_width), y=tile_y + (y * tile_height), colour=(0, 255, 255), alpha=100)
+
+                button = complex.Button(name, passive, hovered, active)
+                row.append(button)
+            self.friendly_tiles.append(row)
+
+        tile_x = self.grid.get_x() + self.grid.get_width() / 2
+        tile_y = self.grid.get_y()
+        for x in range(3):
+            row = []
+            for y in range(3):
+                name = "Hostile Tile " + str(x) + " " + str(y)
+
+                passive = object.Object(handler, name + " Passive", width=tile_width, height=tile_height, x=tile_x + (x * tile_width), y=tile_y + (y * tile_height))
+                hovered = object.Rect(handler, name + " Hovered", width=tile_width, height=tile_height, x=tile_x + (x * tile_width), y=tile_y + (y * tile_height), colour=(255, 100, 100), alpha=100)
+                active = object.Rect(handler, name + " Active", width=tile_width, height=tile_height, x=tile_x + (x * tile_width), y=tile_y + (y * tile_height), colour=(255, 50, 50), alpha=100)
+
+                button = complex.Button(name, passive, hovered, active)
+                row.append(button)
+            self.hostile_tiles.append(row)
+
+    def pass_tiles_to_runner(self):
+        for row in self.friendly_tiles:
+            for tile in row:
+                runner.append_to_update_queue(tile)
+                runner.append_to_draw_queue(tile)
+
+        for row in self.hostile_tiles:
+            for tile in row:
+                runner.append_to_update_queue(tile)
+                runner.append_to_draw_queue(tile)
 
     def reset_buttons(self):
         self.battle_button.enabled = False
@@ -449,6 +508,7 @@ mouse_hovered_object = object.Image(handler, "Custom Mouse Hovered", image_path=
 handler.mouse.set_custom_mouse(mouse_object)
 
 SM = StateManager()
+PD = player_data.PlayerData()
 
 
 def game_behaviour():
