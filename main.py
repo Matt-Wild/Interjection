@@ -50,7 +50,7 @@ class Battle:
         self.hostile_tiles = []
         self.create_tiles()
 
-        self.friendly_team = []
+        self.friendly_team = None
 
         button_y = self.grid.get_bottom_y() + 10
 
@@ -106,6 +106,7 @@ class Battle:
         runner.append_to_draw_queue((self.grid, self.battle_button, self.move_button, self.menu_button))
 
         self.pass_tiles_to_runner()
+        self.configure_friendly_team()
 
     def run(self):
         window.fill((0, 0, 0))
@@ -151,6 +152,46 @@ class Battle:
             return 0
 
         return 1
+
+    def configure_friendly_team(self):
+        self.rescale_friendly_team()
+
+        self.reposition_friendly_team()
+
+        self.runner_refresh_friendly_team()
+
+    def reposition_friendly_team(self):
+        for column in range(3):
+            x = self.friendly_tiles[column][0].passive_state.get_x() + self.friendly_tiles[column][0].passive_state.get_width() // 3
+            for row in range(3):
+                character = self.friendly_team[column][row]
+                if character is not None:
+                    y = self.friendly_tiles[column][row].passive_state.get_y() + self.friendly_tiles[column][row].passive_state.get_height() // 2 - character.passive_state.get_height()
+                    character.set_local_pos(x, y)
+
+    def rescale_friendly_team(self):
+        for column in self.friendly_team:
+            for character in column:
+                if character is not None:
+                    character.rescale(width=self.friendly_tiles[0][0].passive_state.get_width() // 3)
+
+    def runner_remove_friendly_team(self):
+        for column in self.friendly_team:
+            for character in column:
+                if character is not None:
+                    runner.remove_from_update_queue(character)
+                    runner.remove_from_draw_queue(character)
+
+    def runner_add_friendly_team(self):
+        for i in range(3):
+            for j in range(3):
+                if self.friendly_team[j][i] is not None:
+                    runner.append_to_update_queue(self.friendly_team[j][i])
+                    runner.append_to_draw_queue(self.friendly_team[j][i])
+
+    def runner_refresh_friendly_team(self):
+        self.runner_remove_friendly_team()
+        self.runner_add_friendly_team()
 
     def create_tiles(self):
         self.friendly_tiles = []
@@ -508,7 +549,16 @@ mouse_hovered_object = object.Image(handler, "Custom Mouse Hovered", image_path=
 handler.mouse.set_custom_mouse(mouse_object)
 
 SM = StateManager()
-PD = player_data.PlayerData()
+PD = player_data.PlayerData(handler)
+PD.add_random_character()
+PD.add_random_character()
+PD.add_random_character()
+PD.add_random_character()
+PD.add_random_character()
+PD.add_random_character()
+PD.add_random_character()
+PD.add_random_character()
+PD.add_random_character()
 
 
 def game_behaviour():
