@@ -10,9 +10,13 @@ class Entity:
 
 class Character(Entity):
 
-    def __init__(self, handler, name, speed=100, passive_state=None):
+    def __init__(self, handler, name, speed=100, health=100, passive_state=None):
         super().__init__(handler, name)
         self.speed = speed
+        self.health = health
+
+        self.base_speed = speed
+        self.base_health = health
 
         self.state = "passive"
 
