@@ -15,7 +15,7 @@ class PlayerData:
 
     def add_random_character(self):
         if self.check_for_free_slot():
-            addition = entity.Character(self.handler, "Character", random.randint(50, 100))
+            addition = entity.Character(self.handler, "Character", random.randint(50, 100), random.randint(50, 100))
 
             conflict = True
             while conflict:

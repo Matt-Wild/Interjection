@@ -10,13 +10,13 @@ class Entity:
 
 class Character(Entity):
 
-    def __init__(self, handler, name, speed=100, health=100, passive_state=None):
+    def __init__(self, handler, name, speed=100, health=100, base_speed=100, base_health=100, passive_state=None):
         super().__init__(handler, name)
         self.speed = speed
         self.health = health
 
-        self.base_speed = speed
-        self.base_health = health
+        self.base_speed = base_speed
+        self.base_health = base_health
 
         self.state = "passive"
 
@@ -35,6 +35,9 @@ class Character(Entity):
 
     def rescale(self, width=None, height=None):
         self.passive_state.rescale(width, height)
+
+    def get_p_health(self):
+        return self.health / self.base_health
 
     def set_local_pos(self, x=None, y=None):
         if x is not None:

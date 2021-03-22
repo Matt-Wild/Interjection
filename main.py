@@ -8,6 +8,7 @@ from pe2 import complex
 from pe2 import sound
 
 import player_data
+import health_ui
 
 hover_sound = sound.new("main_menu_select.wav")
 confirm_sound = sound.new("main_menu_confirm.wav")
@@ -94,6 +95,8 @@ class Battle:
         self.movegrid_blank.rescale(height=movegrid_height)
         self.movegrid_blank.set_px(0.5)
 
+        self.health_ui = health_ui.UI(handler, self, 5, 5)
+
     def start_process(self):
         runner.clear_update_queue()
         runner.clear_draw_queue()
@@ -103,7 +106,7 @@ class Battle:
         self.reset_buttons()
 
         runner.append_to_update_queue((self.grid, self.battle_button, self.move_button, self.menu_button))
-        runner.append_to_draw_queue((self.grid, self.battle_button, self.move_button, self.menu_button))
+        runner.append_to_draw_queue((self.grid, self.battle_button, self.move_button, self.menu_button, self.health_ui))
 
         self.pass_tiles_to_runner()
         self.configure_friendly_team()
