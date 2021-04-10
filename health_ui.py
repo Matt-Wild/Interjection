@@ -17,9 +17,17 @@ class UI:
         self.gauge_width = self.ui_full.get_width()
 
     def rescale(self, width=None, height=None):
+        gauge_width = None
+        gauge_height = None
+
+        if width:
+            gauge_width = round(width * 0.614)
+        if height:
+            gauge_height = round(height * 0.446)
+
         self.ui_base.rescale(width, height)
-        self.ui_empty.rescale(width * 0.614, height * 0.614)
-        self.ui_full.rescale(width * 0.614, height * 0.614)
+        self.ui_empty.rescale(gauge_width, gauge_height)
+        self.ui_full.rescale(gauge_width, gauge_height)
 
         self.gauge_width = self.ui_full.get_width()
 
@@ -28,9 +36,12 @@ class UI:
         x_pos = self.x_pos
         y_pos = self.y_pos
 
+        count = 0
         for column in friendly_team:
             for character in column:
                 if character is not None:
+                    count += 1
+
                     ui_width = self.ui_base.get_width()
                     ui_height = self.ui_base.get_height()
 
@@ -50,3 +61,7 @@ class UI:
                     self.ui_full.draw()
 
                     y_pos += ui_height + 5
+
+                    if count % 3 == 0:
+                        y_pos = self.y_pos
+                        x_pos += ui_width + 5

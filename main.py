@@ -9,6 +9,7 @@ from pe2 import sound
 
 import player_data
 import health_ui
+import movegrid
 
 hover_sound = sound.new("main_menu_select.wav")
 confirm_sound = sound.new("main_menu_confirm.wav")
@@ -95,7 +96,12 @@ class Battle:
         self.movegrid_blank.rescale(height=movegrid_height)
         self.movegrid_blank.set_px(0.5)
 
-        self.health_ui = health_ui.UI(handler, self, 5, 5)
+        movegrid_tile_dif = self.movegrid_blank.get_width() * 0.1
+
+        self.movegrid = movegrid.Movegrid(handler, round((self.movegrid_blank.get_width() * 0.8) / 3), self.movegrid_blank.get_x() + movegrid_tile_dif, self.movegrid_blank.get_y() + movegrid_tile_dif)
+
+        self.health_ui = health_ui.UI(handler, self, 15, 10)
+        self.health_ui.rescale(height=round(self.grid.get_y() * 0.25))
 
     def start_process(self):
         runner.clear_update_queue()
@@ -249,12 +255,12 @@ class Battle:
         self.menu_button.enabled = False
 
     def enable_movegrid(self):
-        runner.append_to_update_queue(self.movegrid_blank)
-        runner.append_to_draw_queue(self.movegrid_blank)
+        runner.append_to_update_queue((self.movegrid_blank, self.movegrid))
+        runner.append_to_draw_queue((self.movegrid_blank, self.movegrid))
 
     def disable_movegrid(self):
-        runner.remove_from_update_queue(self.movegrid_blank)
-        runner.remove_from_draw_queue(self.movegrid_blank)
+        runner.remove_from_update_queue((self.movegrid_blank, self.movegrid))
+        runner.remove_from_draw_queue((self.movegrid_blank, self.movegrid))
 
 
 class MainMenu:
@@ -553,10 +559,6 @@ handler.mouse.set_custom_mouse(mouse_object)
 
 SM = StateManager()
 PD = player_data.PlayerData(handler)
-PD.add_random_character()
-PD.add_random_character()
-PD.add_random_character()
-PD.add_random_character()
 PD.add_random_character()
 PD.add_random_character()
 PD.add_random_character()
