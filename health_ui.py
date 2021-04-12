@@ -14,6 +14,9 @@ class UI:
         self.ui_empty = object.Image(self.handler, "Health UI Empty", image_path="healthUI/health_empty.png")
         self.ui_full = object.Image(self.handler, "Health UI Full", image_path="healthUI/health_full.png")
 
+        self.character_names = []
+        self.names_generated = False
+
         self.gauge_width = self.ui_full.get_width()
 
     def rescale(self, width=None, height=None):
@@ -30,8 +33,30 @@ class UI:
         self.ui_full.rescale(gauge_width, gauge_height)
 
         self.gauge_width = self.ui_full.get_width()
+        self.generate_names()
+
+    def generate_names(self):
+        self.names_generated = True
+
+        self.character_names = []
+        friendly_team = self.battle_obj.friendly_team
+
+        count = 0
+        try:
+            for column in friendly_team:
+                for character in column:
+                    if character is not None:
+                        count += 1
+
+                        name = object.Text(self.handler, f"Health UI Text {count}", font="Arial", text=character.name.upper(), width=(0.579 * self.ui_base.get_width()), height=(0.32 * self.ui_base.get_height()))
+                        self.character_names.append(name)
+        except TypeError:
+            self.names_generated = False
 
     def draw(self):
+        if not self.names_generated:
+            self.generate_names()
+
         friendly_team = self.battle_obj.friendly_team
         x_pos = self.x_pos
         y_pos = self.y_pos
@@ -54,14 +79,25 @@ class UI:
                     self.ui_full.local_x = x_pos + ui_width * 0.35
                     self.ui_full.local_y = y_pos + ui_height * 0.45
 
+                    nametag = self.get_nametag(character.name)
+                    nametag.local_x = x_pos + ui_width * 0.35
+                    nametag.local_y = y_pos
+
                     self.ui_full.render()
 
                     self.ui_base.draw()
                     self.ui_empty.draw()
                     self.ui_full.draw()
+                    nametag.draw()
 
                     y_pos += ui_height + 5
 
                     if count % 3 == 0:
                         y_pos = self.y_pos
                         x_pos += ui_width + 5
+
+    def get_nametag(self, name):
+        for nametag in self.character_names:
+            if nametag.text == name.upper():
+                return nametag
+        return None

@@ -10,6 +10,7 @@ from pe2 import sound
 import player_data
 import health_ui
 import movegrid
+import turn_queue
 
 hover_sound = sound.new("main_menu_select.wav")
 confirm_sound = sound.new("main_menu_confirm.wav")
@@ -47,6 +48,8 @@ class Battle:
         self.grid.rescale_pwidth(0.98)
         self.grid.set_px(0.5)
         self.grid.set_py(0.5)
+
+        self.turn_queue = []
 
         self.friendly_tiles = []
         self.hostile_tiles = []
@@ -101,7 +104,9 @@ class Battle:
         self.movegrid = movegrid.Movegrid(handler, round((self.movegrid_blank.get_width() * 0.8) / 3), self.movegrid_blank.get_x() + movegrid_tile_dif, self.movegrid_blank.get_y() + movegrid_tile_dif)
 
         self.health_ui = health_ui.UI(handler, self, 15, 10)
-        self.health_ui.rescale(height=round(self.grid.get_y() * 0.25))
+        self.health_ui.rescale(height=round(self.grid.get_y() * 0.28))
+
+        self.turn_queue_images = turn_queue.TurnQueue(handler, self.turn_queue)
 
     def start_process(self):
         runner.clear_update_queue()
@@ -112,10 +117,12 @@ class Battle:
         self.reset_buttons()
 
         runner.append_to_update_queue((self.grid, self.battle_button, self.move_button, self.menu_button))
-        runner.append_to_draw_queue((self.grid, self.battle_button, self.move_button, self.menu_button, self.health_ui))
+        runner.append_to_draw_queue((self.grid, self.battle_button, self.move_button, self.menu_button, self.health_ui, self.turn_queue_images))
 
         self.pass_tiles_to_runner()
         self.configure_friendly_team()
+
+        self.update_turn_queue()
 
     def run(self):
         window.fill((0, 0, 0))
@@ -161,6 +168,10 @@ class Battle:
             return 0
 
         return 1
+
+    def update_turn_queue(self):
+        while len(self.turn_queue) < 6:
+            self.turn_queue.append(PD.get_next_turn())
 
     def configure_friendly_team(self):
         self.rescale_friendly_team()

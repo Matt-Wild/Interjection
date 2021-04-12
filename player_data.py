@@ -10,12 +10,18 @@ class PlayerData:
         self.team_layout = []
         self.reset_team_layout()
 
+        self.random_count = 0
+
     def reset_team_layout(self):
         self.team_layout = [[None, None, None], [None, None, None], [None, None, None]]
 
     def add_random_character(self):
+        self.random_count += 1
+
         if self.check_for_free_slot():
-            addition = entity.Character(self.handler, "Character", random.randint(50, 100), random.randint(50, 100))
+            speed = random.randint(50, 100)
+            health = random.randint(50, 100)
+            addition = entity.Character(self.handler, f"Character {self.random_count}", speed, health, speed, health)
 
             conflict = True
             while conflict:
@@ -32,3 +38,20 @@ class PlayerData:
                 if character is None:
                     return True
         return False
+
+    def get_next_turn(self):
+        fastest_character = None
+
+        for column in self.team_layout:
+            for character in column:
+                if character:
+                    if not fastest_character:
+                        fastest_character = character
+                    elif character.speed > fastest_character.speed:
+                        fastest_character.wait_for_turn()
+                        fastest_character = character
+                    else:
+                        character.wait_for_turn()
+        fastest_character.prepare_for_turn()
+
+        return fastest_character

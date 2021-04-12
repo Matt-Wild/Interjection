@@ -33,6 +33,12 @@ class Character(Entity):
         if self.state == "passive":
             self.passive_state.draw()
 
+    def prepare_for_turn(self):
+        self.speed = 0
+
+    def wait_for_turn(self):
+        self.speed += self.base_speed // 10
+
     def rescale(self, width=None, height=None):
         self.passive_state.rescale(width, height)
 
