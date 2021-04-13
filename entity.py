@@ -1,3 +1,5 @@
+import random
+
 from pe2 import object
 
 
@@ -10,7 +12,7 @@ class Entity:
 
 class Character(Entity):
 
-    def __init__(self, handler, name, speed=100, health=100, base_speed=100, base_health=100, passive_state=None):
+    def __init__(self, handler, name, speed=100, health=100, base_speed=100, base_health=100, passive_state=None, icon_filename="default.png"):
         super().__init__(handler, name)
         self.speed = speed
         self.health = health
@@ -24,6 +26,16 @@ class Character(Entity):
             self.passive_state = object.Image(handler, name + "Passive State", image_path="characters/default.png")
         else:
             self.passive_state = passive_state
+
+        if icon_filename == "default.png":
+            choice = random.randint(1, 5)
+            icon_filename = f"default_{choice}.png"
+
+        self.icon = object.Image(handler, f"{name} Icon", image_path=f"charIcons/{icon_filename}")
+        self.icon.rescale_pwidth(0.03)
+
+        self.icon_large = object.Image(handler, f"{name} Icon Large", image_path=f"charIcons/{icon_filename}")
+        self.icon_large.rescale_pwidth(0.07)
 
     def update(self):
         if self.state == "passive":

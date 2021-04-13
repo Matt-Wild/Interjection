@@ -83,12 +83,17 @@ class UI:
                     nametag.local_x = x_pos + ui_width * 0.35
                     nametag.local_y = y_pos
 
+                    icon = character.icon
+                    icon.local_x = x_pos + ui_width * 0.05
+                    icon.local_y = y_pos + ui_height * 0.3
+
                     self.ui_full.render()
 
                     self.ui_base.draw()
                     self.ui_empty.draw()
                     self.ui_full.draw()
                     nametag.draw()
+                    icon.draw()
 
                     y_pos += ui_height + 5
 

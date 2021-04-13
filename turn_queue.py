@@ -18,13 +18,27 @@ class TurnQueue:
         x_pos = self.next_turn_image.local_x
 
         x_increase = self.turn_queue_image.get_width() + 20
+        icon_dif = self.turn_queue_image.get_width() // 40
+        icon_large_dif = self.next_turn_image.get_width() // 40
+
+        icon_large = self.turn_queue[0].icon_large
+        icon_large.local_x = x_pos + icon_large_dif
+        icon_large.local_y = 0
 
         self.next_turn_image.draw()
+
+        icon_large.draw()
 
         x_pos += self.next_turn_image.get_width() + 30
 
         for i in range(5):
+            icon = self.turn_queue[i + 1].icon
+            icon.local_x = x_pos + icon_dif
+            icon.local_y = 0
+
             self.turn_queue_image.local_x = x_pos
             self.turn_queue_image.draw()
+
+            icon.draw()
 
             x_pos += x_increase
