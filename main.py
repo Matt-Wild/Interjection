@@ -124,6 +124,8 @@ class Battle:
 
         self.update_turn_queue()
 
+        self.correct_grid_selection()
+
     def run(self):
         window.fill((0, 0, 0))
 
@@ -272,6 +274,24 @@ class Battle:
     def disable_movegrid(self):
         runner.remove_from_update_queue((self.movegrid_blank, self.movegrid))
         runner.remove_from_draw_queue((self.movegrid_blank, self.movegrid))
+
+    def correct_grid_selection(self):
+        for x in range(3):
+            for y in range(3):
+                tile = self.friendly_tiles[x][y]
+                character = self.friendly_team[x][y]
+
+                if character == self.turn_queue[0]:
+                    tile.enabled = True
+                else:
+                    tile.enabled = False
+
+    def get_friendly_grid_selection(self):
+        for x in range(0, 3):
+            for y in range(0, 3):
+                if self.friendly_tiles[x][y].enabled:
+                    return x, y
+        return None, None
 
 
 class MainMenu:
